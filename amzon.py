@@ -9,32 +9,22 @@ PRICE =50
 username = "xxxxx"
 passwd = "xxxxxxx"
 
-test =0
+TICKET_URI = 'https://kyfw.12306.cn/otn/leftTicket/init'
+MY_URI = 'https://kyfw.12306.cn/otn/index/initMy12306'
+LOGIN_URI = 'https://www.amazon.de'
+
+GOOD_URI ='https://www.amazon.de/dp/B01GDZSZ6Q/ref=twister_B013USRV1E?_encoding=UTF8&th=1&language=en_GB'
 
 #username = line_list[2 * count ].line.split(" ")[-1]
 #passwd = line_list[2 * count + 1].line.split(" ")[-1]
 ######################### the file operation ###########################################################################
 def log(str):
-    fo = open("log.txt", "a")
+    fo = open(log_file, 'a')
     fo.write(str+'\n')
     fo.close()
 
-def getusr(count):
-    with open('usr.txt', 'rb') as f:
-        line_list = f.readlines()
-        #for line in line_list:
-        #    print(line.strip())  # 把末尾的'\n'删掉
-    username = line_list[2 * count]
-    passwd = line_list[2 * count + 1]
-    print('user')
-    print(line_list[2 * (count - 1)])
-    print('passwd')
-    print(line_list[2 * count - 1])
-    napw = [username, passwd]
-    return napw
-
 def GetUserFromFile(count):
-    with open('usr.txt', 'rb') as f:
+    with open('usr.txt', 'r') as f:
         line_list = f.readlines()
     #    for line in line_list:
     #       print(line.strip())  # 把末尾的'\n'删掉
@@ -58,6 +48,7 @@ def login(username,passwd):
         a=brw.find_element_by_id('ap_password')
         a.clear()
         a.send_keys(passwd)  # pwd
+        sleep(4)
         brw.find_element_by_id('signInSubmit').click()
 
     except Exception as e:
@@ -89,7 +80,7 @@ def check_goods():
     status = False
     try:
         #brw.get("https://www.amazon.de/dp/B01GDZSZ6Q/ref=twister_B013USRV1E?_encoding=UTF8&th=1")
-        brw.get("https://www.amazon.de/dp/B01GDZSZ6Q/ref=twister_B013USRV1E?_encoding=UTF8&th=1&language=en_GB")
+        brw.get(GOOD_URI)
         sleep(15)
         # get the element of the data  5*600g
         a = brw.find_element_by_xpath("//li[@data-defaultasin='B01GDZSZ6Q']")
@@ -182,13 +173,15 @@ def book():
 
 if __name__ == "__main__":
     # get the user info from the usr txt
-    line_l = GetUserFromFile(0)
+    [username, passwd] = GetUserFromFile(0)
+    global log_file
+    log_file = 'amzon_start' + datetime.now().strftime('%Y-%m-%d_%H_%M_%S')+'.txt'
     log('amzon_start'+datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     global brw
     brw = webdriver.Chrome()
     brw.implicitly_wait(3)  # seconds
     brw.set_window_size(1366, 768)
-    brw.get("https://www.amazon.de")
+    brw.get(LOGIN_URI)
     sleep(10)
     status =False
     cnt =0;
@@ -200,7 +193,7 @@ if __name__ == "__main__":
             status = login(username,passwd)
         except Exception as e:
                 log(str(traceback.print_exc()))
-                brw.get("https://www.amazon.de")
+                brw.get(LOGIN_URI)
                 sleep(10)
         if(status ==False):
             try:
@@ -212,6 +205,6 @@ if __name__ == "__main__":
                     sleep(10)
 
     #status=True
-        print("login"+str(status))
+        print("login_"+str(status))
     status = book()
     log('the book result'+status)
