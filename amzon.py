@@ -6,9 +6,10 @@ import traceback
 from splinter.browser import Browser
 
 PRICE =50
-username = "yongyaqin1225@126.com"
-passwd = "yongyaqin1225"
+username = "xxxxx"
+passwd = "xxxxxxx"
 
+test =0
 
 #username = line_list[2 * count ].line.split(" ")[-1]
 #passwd = line_list[2 * count + 1].line.split(" ")[-1]
@@ -83,7 +84,6 @@ def getprice(str):
         return -1
     price= float(str[index+4:index2])
     return price
-
 
 def check_goods():
     status = False
